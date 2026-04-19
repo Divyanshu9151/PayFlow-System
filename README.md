@@ -55,9 +55,13 @@ PayFlow is a scalable, microservices-based fintech backend system that enables s
 🚀 Getting Started
 
 1. Clone repo
+
    https://github.com/Divyanshu9151/PayFlow-System.git
+
    cd PayFlow-System
+
 2. Run System
+
    docker-compose up --build
 
  📌 Key Learnings
