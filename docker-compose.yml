@@ -1,0 +1,94 @@
+version: "3.9"
+
+services:
+
+  # 🧠 Eureka Server
+  eureka:
+    build: ./Server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - payflow-net
+
+  # 🚪 API Gateway
+  gateway:
+    build: ./gateway
+    container_name: gateway-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+    networks:
+      - payflow-net
+
+  # 💳 Payflow Service
+  payflow:
+    build: ./payflow
+    container_name: payflow-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - rabbitmq
+      - eureka
+    environment:
+      #generate new secret OPENAI_API_KEY
+     # OPENAI_API_KEY:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/payflow
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      SPRING_RABBITMQ_HOST: rabbitmq
+    networks:
+      - payflow-net
+
+  # 👛 Wallet Service
+  wallet:
+    build: ./wallet
+    container_name: wallet-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
+      - eureka
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/payflow
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+    networks:
+      - payflow-net
+
+  # 🐬 MySQL
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: payflow
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - payflow-net
+
+  # 🐰 RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"  # UI
+    networks:
+      - payflow-net
+
+# 📦 Volumes
+volumes:
+  mysql-data:
+
+# 🌐 Network
+networks:
+  payflow-net:

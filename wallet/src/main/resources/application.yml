@@ -1,0 +1,57 @@
+server:
+  port: 8081   # ? wallet service runs on different port
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+spring:
+  application:
+    name: wallet-service
+  datasource:
+    # for using docker db and run application from docker
+    url: jdbc:mysql://mysql:3306/payflow   # ✅ changed
+    username: root
+    password: root       # ✅ change this too (explained below)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # for using docker db and run application from Java file  //Default and Recommended
+#    url: jdbc:mysql://localhost:3307/payflow   # ? same DB (for now)
+#    username: root
+#    password: root
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  rabbitmq:
+#    for local environment
+#    host: localhost
+#    for docker
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+
+  cache:
+    cache-names: walletBalance
+
+  caffeine:
+    spec: maximumSize=100,expireAfterWrite=5m
+
+logging:
+  file:
+    name: logs/wallet-service.log
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
