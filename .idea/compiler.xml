@@ -7,9 +7,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="wallet" />
         <module name="Server" />
-        <module name="gateway" />
+        <module name="wallet" />
       </profile>
       <profile name="Annotation profile for payflow" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -21,6 +20,9 @@
         <module name="payflow" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="gateway" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
